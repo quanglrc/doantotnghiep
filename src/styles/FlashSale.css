@@ -1,0 +1,99 @@
+.flash-sale {
+    margin: 28px auto;
+    background: linear-gradient(135deg, #ee0033 0%, #ff6b00 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.fs-head {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 16px 24px;
+    color: #fff;
+}
+
+.fs-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fs-title > i {
+    font-size: 28px;
+    color: var(--accent);
+    filter: drop-shadow(0 0 8px rgba(255, 179, 0, 0.6));
+}
+
+.fs-title h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.fs-sub {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-left: 4px;
+}
+
+.fs-timer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    font-size: 13px;
+}
+
+.fs-clock {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+}
+
+.fs-clock b {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    min-width: 28px;
+    text-align: center;
+}
+
+.fs-all {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.fs-all:hover {
+    color: var(--accent);
+}
+
+.fs-grid {
+    background: #fff;
+    margin: 0 4px 4px 4px;
+    border-radius: 0 0 10px 10px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 850px) {
+    .fs-grid { grid-template-columns: repeat(3, 1fr); }
+    .fs-head { flex-wrap: wrap; }
+    .fs-sub { display: none; }
+}
+
+@media (max-width: 600px) {
+    .fs-grid { grid-template-columns: repeat(2, 1fr); }
+    .fs-title h2 { font-size: 18px; }
+}
