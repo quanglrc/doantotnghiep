@@ -1,0 +1,11 @@
+.img-logo {
+  height: 48px;
+  width: 145px;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+#root {
+  scrollbar-width: none;
+}

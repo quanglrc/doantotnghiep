@@ -1,0 +1,42 @@
+.brand-strip {
+    margin: 28px auto;
+}
+
+.brand-row {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 12px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.brand-chip {
+    height: 60px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--text);
+    font-size: 16px;
+    background: #fafbfc;
+    transition: border-color 0.15s, color 0.15s, transform 0.15s;
+    cursor: pointer;
+}
+
+.brand-chip:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 992px) {
+    .brand-row { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 600px) {
+    .brand-row { grid-template-columns: repeat(2, 1fr); }
+}

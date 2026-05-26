@@ -1,0 +1,79 @@
+.auth-page {
+    padding: 60px 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.auth-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 32px 36px;
+    width: 100%;
+    max-width: 440px;
+}
+
+.auth-card h1 {
+    margin: 0 0 6px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.auth-sub {
+    margin: 0 0 24px 0;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.auth-card form {
+    display: grid;
+    gap: 14px;
+}
+
+.form-error {
+    background: #fee2e2;
+    color: var(--danger-dark);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+}
+
+.auth-hint {
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: #fff8e1;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #6b5b00;
+    border: 1px dashed var(--accent);
+}
+
+.auth-hint i {
+    color: var(--accent);
+    margin-right: 4px;
+}
+
+.auth-hint code {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: ui-monospace, monospace;
+}
+
+.auth-foot {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.auth-foot a {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.auth-foot a:hover {
+    text-decoration: underline;
+}

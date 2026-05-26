@@ -1,0 +1,100 @@
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+    animation: fade-in 0.18s ease;
+}
+
+.modal-card {
+    background: #fff;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 520px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    box-shadow: var(--shadow-lg);
+    animation: pop-in 0.2s ease;
+}
+
+.modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-head h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.modal-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 16px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.modal-close:hover {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.modal-body {
+    padding: 20px 22px;
+    display: grid;
+    gap: 14px;
+}
+
+.modal-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 6px;
+}
+
+.rating-input {
+    display: flex;
+    gap: 4px;
+}
+
+.rating-input button {
+    color: #d1d5db;
+    font-size: 26px;
+    padding: 4px;
+    transition: color 0.15s, transform 0.15s;
+}
+
+.rating-input button.active {
+    color: #ffb300;
+}
+
+.rating-input button:hover {
+    transform: scale(1.15);
+}
+
+.btn-danger {
+    color: var(--danger) !important;
+    border-color: var(--danger) !important;
+}
+
+.btn-danger:hover {
+    background: var(--danger) !important;
+    color: #fff !important;
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to   { opacity: 1; transform: scale(1); }
+}
