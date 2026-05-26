@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:web4s.vn)",
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4000/api/health)",
+      "Bash(curl -s http://localhost:4000/api/health)",
+      "Bash(curl -s http://localhost:4000/api/categories)",
+      "Bash(curl -s http://localhost:4000/api/products)",
+      "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{try{const a=JSON.parse\\(d\\);console.log\\('Count:',a.length\\);console.log\\('First 3:',a.slice\\(0,3\\).map\\(p=>p.name\\).join\\(' | '\\)\\)}catch\\(e\\){console.log\\('Parse error:',d.slice\\(0,200\\)\\)}}\\)\")",
+      "Bash(curl -s -X POST http://localhost:4000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"admin@viqitech.vn\",\"password\":\"admin123\"}')",
+      "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{try{const o=JSON.parse\\(d\\);if\\(o.user\\)console.log\\('✓ Admin login OK:',o.user.email,'role:',o.user.role\\);else console.log\\('✗',o.error||d\\)}catch\\(e\\){console.log\\('Parse error:',d.slice\\(0,200\\)\\)}}\\)\")",
+      "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{console.log\\(d\\)}\\)\")",
+      "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{const u=JSON.parse\\(d\\);u.sort\\(\\(a,b\\)=>b.id-a.id\\);u.forEach\\(x=>console.log\\('  id='+x.id, '|', x.email, '|', x.name, '|', x.role, '|', x.created_at\\)\\)}\\)\")",
+      "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{try{const o=JSON.parse\\(d\\);if\\(o.error\\){console.log\\('✗ LỖI:',o.error.message\\);console.log\\('Code:',o.error.code,'Status:',o.error.status\\)}else{const t=o.candidates?.[0]?.content?.parts?.[0]?.text;console.log\\('✓ Gemini OK. Trả lời:',t||'\\(rỗng\\)'\\)}}catch\\(e\\){console.log\\('Parse fail:',d.slice\\(0,500\\)\\)}}\\)\")",
+      "Bash(curl -s http://localhost:4000/api/chatbot)",
+      "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{try{const o=JSON.parse\\(d\\);console.log\\('Trạng thái backend hiện tại: geminiEnabled =',o.geminiEnabled,'| model =',o.model\\)}catch\\(e\\){console.log\\('Backend chưa chạy hoặc lỗi'\\)}}\\)\")",
+      "Bash(curl -s http://localhost:4000/api/chatbot/status)",
+      "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{console.log\\('=== STATUS ==='\\);console.log\\(d\\)}\\)\")",
+      "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{const o=JSON.parse\\(d\\);console.log\\('Source:',o.source\\);console.log\\('Reply:',o.reply\\)}\\)\")",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //PID 8720 //F)",
+      "Bash(node --check src/seed.js)",
+      "Bash(node src/seed.js)",
+      "Bash(taskkill //PID 14848 //F)",
+      "Bash(node --check src/utils/mailer.js)",
+      "Bash(node --check src/routes/auth.routes.js)",
+      "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{try{const o=JSON.parse\\(d\\);console.log\\('Forgot-password response:'\\);console.log\\('  emailSent:', o.emailSent\\);console.log\\('  message:', o.message\\);if\\(o.demo\\){console.log\\('  demo.resetLink:', o.demo.resetLink\\);console.log\\('  demo.mailerStatus:', o.demo.mailerStatus\\);if\\(o.demo.emailError\\)console.log\\('  emailError:', o.demo.emailError\\)}}catch\\(e\\){console.log\\(d.slice\\(0,500\\)\\)}}\\)\")",
+      "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{console.log\\('Verify response:',d\\)}\\)\")",
+      "Bash(ipconfig)",
+      "Bash(git push *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(grep -E \"\\\\.env$\")",
+      "Bash(rm -rf frontend/.git)",
+      "Bash(git rm *)",
+      "Bash(grep \"\\\\.env$\")",
+      "Bash(git reset *)",
+      "Bash(grep -E \"\\(^\\\\.env$|/\\\\.env$\\)\")"
+    ]
+  }
+}

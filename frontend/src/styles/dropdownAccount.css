@@ -1,0 +1,87 @@
+.account-menu {
+    position: relative;
+}
+
+.account-trigger {
+    color: #fff;
+    font-size: 20px;
+    padding: 6px 10px;
+    border-radius: var(--radius);
+    transition: background 0.15s;
+}
+
+.account-trigger:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.account-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 220px;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    list-style: none;
+    padding: 8px 0;
+    z-index: 1000;
+    border: 1px solid var(--border);
+}
+
+.account-dropdown li a,
+.account-dropdown li .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--text);
+    transition: background 0.15s, color 0.15s;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.account-greeting {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.account-greeting strong {
+    color: var(--text);
+    font-size: 14px;
+}
+
+.logout-btn i {
+    color: var(--danger) !important;
+}
+
+.logout-btn:hover {
+    background: #fee2e2 !important;
+    color: var(--danger) !important;
+}
+
+.account-dropdown li a i {
+    width: 16px;
+    color: var(--text-muted);
+}
+
+.account-dropdown li a:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.account-dropdown li a:hover i {
+    color: var(--primary);
+}
+
+.account-dropdown .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 6px 0;
+}

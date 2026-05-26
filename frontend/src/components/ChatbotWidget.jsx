@@ -1,0 +1,216 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import { api } from "../api/client";
+import "../styles/Chatbot.css";
+
+const DEFAULT_QUICK = [
+    "Tư vấn điện thoại",
+    "Tư vấn laptop",
+    "Chính sách bảo hành",
+    "Phương thức thanh toán",
+];
+
+const DEFAULT_WELCOME =
+    "Xin chào! Tôi là trợ lý ảo của ViQiTech. Bạn cần hỗ trợ gì hôm nay?";
+
+let msgIdCounter = 0;
+
+const ChatbotWidget = () => {
+    const [open, setOpen] = useState(false);
+    const [msgs, setMsgs] = useState([
+        { id: ++msgIdCounter, role: "bot", text: DEFAULT_WELCOME },
+    ]);
+    const [text, setText] = useState("");
+    const [sending, setSending] = useState(false);
+    const [quickReplies, setQuickReplies] = useState(DEFAULT_QUICK);
+    const [geminiEnabled, setGeminiEnabled] = useState(false);
+    const [modelName, setModelName] = useState("");
+    const endRef = useRef(null);
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        api.get("/chatbot")
+            .then((cfg) => {
+                if (cfg.welcomeMessage) {
+                    setMsgs([{ id: ++msgIdCounter, role: "bot", text: cfg.welcomeMessage }]);
+                }
+                if (Array.isArray(cfg.quickReplies) && cfg.quickReplies.length > 0) {
+                    setQuickReplies(cfg.quickReplies);
+                }
+                setGeminiEnabled(!!cfg.geminiEnabled);
+                setModelName(cfg.model || "");
+            })
+            .catch(() => { /* dùng default */ });
+    }, []);
+
+    useEffect(() => {
+        if (open) endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [open, msgs.length, sending]);
+
+    useEffect(() => {
+        if (open) setTimeout(() => inputRef.current?.focus(), 100);
+    }, [open]);
+
+    const send = useCallback(
+        async (content) => {
+            const t = (content ?? text).trim();
+            if (!t || sending) return;
+
+            const userMsgId = ++msgIdCounter;
+            setMsgs((arr) => [...arr, { id: userMsgId, role: "user", text: t }]);
+            setText("");
+            setSending(true);
+
+            const history = msgs.map((m) => ({ role: m.role, text: m.text }));
+
+            try {
+                const { reply, source } = await api.post(
+                    "/chatbot/chat",
+                    { message: t, history },
+                    { auth: false }
+                );
+                setMsgs((arr) => [
+                    ...arr,
+                    {
+                        id: ++msgIdCounter,
+                        role: "bot",
+                        text: reply,
+                        source, // "gemini" | "rules-no-key" | "error"
+                    },
+                ]);
+            } catch (err) {
+                setMsgs((arr) => [
+                    ...arr,
+                    {
+                        id: ++msgIdCounter,
+                        role: "bot",
+                        text: "Xin lỗi, tôi không kết nối được. Bạn thử lại sau hoặc gọi hotline 1900 1234 nhé.",
+                        error: true,
+                    },
+                ]);
+                console.error(err);
+            } finally {
+                setSending(false);
+            }
+        },
+        [text, msgs, sending]
+    );
+
+    const onKeyDown = (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            send();
+        }
+    };
+
+    return (
+        <>
+            <button
+                type="button"
+                className={`chatbot-fab ${open ? "open" : ""}`}
+                onClick={() => setOpen((v) => !v)}
+                aria-label="Mở trợ lý ảo"
+            >
+                <i className={`fa-solid ${open ? "fa-xmark" : "fa-comment-dots"}`}></i>
+            </button>
+
+            {open && (
+                <div className="chatbot-panel" role="dialog" aria-label="Trợ lý ảo">
+                    <div className="chatbot-head">
+                        <div className="bot-avatar">
+                            <i className="fa-solid fa-robot"></i>
+                        </div>
+                        <div className="bot-head-info">
+                            <strong>Trợ lý ViQiTech</strong>
+                            <small className={geminiEnabled ? "live" : "offline"}>
+                                {geminiEnabled
+                                    ? `AI ${modelName ? `(${modelName})` : ""} - đang hoạt động`
+                                    : "Đang dùng kịch bản"}
+                            </small>
+                        </div>
+                        <button
+                            type="button"
+                            className="chatbot-close"
+                            onClick={() => setOpen(false)}
+                            aria-label="Đóng"
+                        >
+                            <i className="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    {!geminiEnabled && (
+                        <div className="chatbot-warning">
+                            <i className="fa-solid fa-circle-exclamation"></i>
+                            <span>
+                                Chatbot AI chưa được kích hoạt. Admin cần thêm{" "}
+                                <code>GEMINI_API_KEY</code> vào <code>backend/.env</code> rồi restart server.
+                            </span>
+                        </div>
+                    )}
+
+                    <div className="chatbot-body">
+                        {msgs.map((m) => (
+                            <div
+                                key={m.id}
+                                className={`bubble bubble-${m.role}${m.error ? " bubble-error" : ""}`}
+                            >
+                                {m.text.split("\n").map((line, i) => (
+                                    <div key={i}>{line || <>&nbsp;</>}</div>
+                                ))}
+                                {m.source === "error" && (
+                                    <div className="bubble-source">
+                                        <i className="fa-solid fa-triangle-exclamation"></i> Gemini đang lỗi
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                        {sending && (
+                            <div className="bubble bubble-bot bubble-typing">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        )}
+                        <div ref={endRef} />
+                    </div>
+
+                    <div className="chatbot-quick">
+                        {quickReplies.map((q) => (
+                            <button
+                                type="button"
+                                key={q}
+                                onClick={() => send(q)}
+                                className="quick-chip"
+                                disabled={sending}
+                            >
+                                {q}
+                            </button>
+                        ))}
+                    </div>
+
+                    <form
+                        className="chatbot-form"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            send();
+                        }}
+                    >
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            placeholder={sending ? "Đang trả lời..." : "Nhập tin nhắn..."}
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                            onKeyDown={onKeyDown}
+                            disabled={sending}
+                        />
+                        <button type="submit" aria-label="Gửi" disabled={sending || !text.trim()}>
+                            <i className={`fa-solid ${sending ? "fa-spinner fa-spin" : "fa-paper-plane"}`}></i>
+                        </button>
+                    </form>
+                </div>
+            )}
+        </>
+    );
+};
+
+export default ChatbotWidget;
