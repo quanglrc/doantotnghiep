@@ -1,36 +1,39 @@
-<<<<<<< HEAD
 # Dependencies
 node_modules/
 **/node_modules/
 
-# Environment
-.env
+# Environment - cố ý commit backend/.env vì repo private (đồ án tốt nghiệp)
+# Các .env khác (local override) vẫn ignore
 .env.local
 .env.*.local
-**/.env
 **/.env.local
 
 # Build output
 dist/
 build/
+dist-ssr/
 **/dist/
 **/build/
 
 # Logs
-=======
-# Logs
 logs
->>>>>>> fc8625954a352ad102657caac13c9d633f216ff5
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-<<<<<<< HEAD
+pnpm-debug.log*
+lerna-debug.log*
 
 # IDE / editor
-.vscode/
-.idea/
+.vscode/*
+!.vscode/extensions.json
+.idea
 *.swp
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 .DS_Store
 Thumbs.db
 
@@ -42,25 +45,6 @@ Thumbs.db
 coverage/
 
 # Misc
+*.local
 *.tgz
 *.tar.gz
-=======
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
->>>>>>> fc8625954a352ad102657caac13c9d633f216ff5
