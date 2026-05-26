@@ -37,7 +37,8 @@
       "Bash(git rm *)",
       "Bash(grep \"\\\\.env$\")",
       "Bash(git reset *)",
-      "Bash(grep -E \"\\(^\\\\.env$|/\\\\.env$\\)\")"
+      "Bash(grep -E \"\\(^\\\\.env$|/\\\\.env$\\)\")",
+      "Bash(git commit *)"
     ]
   }
 }
