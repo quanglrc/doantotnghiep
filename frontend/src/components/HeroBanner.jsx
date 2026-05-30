@@ -6,6 +6,7 @@ const slides = [
         title: "iPhone 15 Pro Max",
         subtitle: "Giảm đến 5 triệu - Trả góp 0%",
         cta: "Mua ngay",
+        image: "https://res.cloudinary.com/dpf2uink8/image/upload/v1780138979/viqitech/banners/hero-iphone-15-pro-max.jpg",
         bg: "linear-gradient(135deg, #0b1530 0%, #1e6fff 100%)",
         accent: "#ffb300",
     },
@@ -13,6 +14,7 @@ const slides = [
         title: "Laptop Gaming",
         subtitle: "ROG · MSI · Dell · Giảm sốc 20%",
         cta: "Khám phá",
+        image: "https://res.cloudinary.com/dpf2uink8/image/upload/v1780138981/viqitech/banners/hero-laptop-gaming.jpg",
         bg: "linear-gradient(135deg, #2d0a3d 0%, #ee0033 100%)",
         accent: "#ffb300",
     },
@@ -20,6 +22,7 @@ const slides = [
         title: "iPad Pro M4 mới",
         subtitle: "Trả góp 0% - Tặng bút Apple Pencil",
         cta: "Xem ngay",
+        image: "https://res.cloudinary.com/dpf2uink8/image/upload/v1780139342/viqitech/banners/hero-ipad-pro-m4.jpg",
         bg: "linear-gradient(135deg, #04313a 0%, #0bc1c1 100%)",
         accent: "#ffd54f",
     },
@@ -30,11 +33,13 @@ const sideBanners = [
         title: "Tai nghe AirPods",
         subtitle: "Giảm đến 1.5tr",
         bg: "linear-gradient(135deg, #1d1d1f, #4a4a4a)",
+        image: "https://res.cloudinary.com/dpf2uink8/image/upload/v1780140038/viqitech/banners/hero-side-airpods.jpg",
     },
     {
         title: "Đồng hồ thông minh",
         subtitle: "Trả góp 0%",
         bg: "linear-gradient(135deg, #1457d4, #1e6fff)",
+        image: "https://res.cloudinary.com/dpf2uink8/image/upload/v1780140040/viqitech/banners/hero-side-watch.jpg",
     },
 ];
 
@@ -63,6 +68,10 @@ const HeroBanner = () => {
                         </button>
                     </div>
 
+                    <div className="hero-image" key={idx}>
+                        <img src={slide.image} alt={slide.title} />
+                    </div>
+
                     <div className="hero-dots">
                         {slides.map((_, i) => (
                             <button
@@ -78,8 +87,15 @@ const HeroBanner = () => {
                 <div className="hero-side">
                     {sideBanners.map((b, i) => (
                         <div key={i} className="hero-side-item" style={{ background: b.bg }}>
-                            <h3>{b.title}</h3>
-                            <p>{b.subtitle}</p>
+                            <div className="hero-side-content">
+                                <h3>{b.title}</h3>
+                                <p>{b.subtitle}</p>
+                            </div>
+                            {b.image && (
+                                <div className="hero-side-image">
+                                    <img src={b.image} alt={b.title} />
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

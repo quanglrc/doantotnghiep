@@ -247,10 +247,14 @@
     border-bottom-color: var(--primary);
 }
 
+.cat-toggle-wrap {
+    position: relative;
+}
+
 .cat-dropdown {
     position: absolute;
     top: 100%;
-    left: 16px;
+    left: 0;
     width: 280px;
     background: #fff;
     box-shadow: var(--shadow-lg);

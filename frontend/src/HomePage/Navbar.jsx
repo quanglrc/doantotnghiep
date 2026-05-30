@@ -87,15 +87,37 @@ const Navbar = () => {
 
             <nav className="catbar">
                 <div className="container catbar-inner">
-                    <button
-                        type="button"
-                        className="cat-toggle"
-                        onClick={() => setOpenCats((v) => !v)}
+                    <div
+                        className="cat-toggle-wrap"
+                        onMouseLeave={() => setOpenCats(false)}
                     >
-                        <i className="fa-solid fa-bars"></i>
-                        Danh mục sản phẩm
-                        <i className={`fa-solid fa-chevron-${openCats ? "up" : "down"}`}></i>
-                    </button>
+                        <button
+                            type="button"
+                            className="cat-toggle"
+                            onClick={() => setOpenCats((v) => !v)}
+                            onMouseEnter={() => setOpenCats(true)}
+                        >
+                            <i className="fa-solid fa-bars"></i>
+                            Danh mục sản phẩm
+                            <i className={`fa-solid fa-chevron-${openCats ? "up" : "down"}`}></i>
+                        </button>
+
+                        {openCats && (
+                            <div className="cat-dropdown">
+                                {categories.map((c) => (
+                                    <Link
+                                        key={c.id}
+                                        to={`/san-pham?cat=${c.id}`}
+                                        className="cat-dropdown-item"
+                                        onClick={() => setOpenCats(false)}
+                                    >
+                                        <i className={`fa-solid ${c.icon}`}></i>
+                                        {c.name}
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
                     <ul className="cat-menu">
                         <li><NavLink to="/" end>Trang chủ</NavLink></li>
@@ -105,22 +127,6 @@ const Navbar = () => {
                         <li><NavLink to="/gioi-thieu">Giới thiệu</NavLink></li>
                         <li><NavLink to="/lien-he">Liên hệ</NavLink></li>
                     </ul>
-
-                    {openCats && (
-                        <div className="cat-dropdown" onMouseLeave={() => setOpenCats(false)}>
-                            {categories.map((c) => (
-                                <Link
-                                    key={c.id}
-                                    to={`/san-pham?cat=${c.id}`}
-                                    className="cat-dropdown-item"
-                                    onClick={() => setOpenCats(false)}
-                                >
-                                    <i className={`fa-solid ${c.icon}`}></i>
-                                    {c.name}
-                                </Link>
-                            ))}
-                        </div>
-                    )}
                 </div>
             </nav>
         </header>

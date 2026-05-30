@@ -14,6 +14,7 @@ import brandsRoutes from "./routes/brands.routes.js";
 import ordersRoutes from "./routes/orders.routes.js";
 import reviewsRoutes from "./routes/reviews.routes.js";
 import vouchersRoutes from "./routes/vouchers.routes.js";
+import uploadsRoutes from "./routes/uploads.routes.js";
 import chatbotRoutes from "./routes/chatbot.routes.js";
 import statsRoutes from "./routes/stats.routes.js";
 
@@ -40,6 +41,7 @@ app.use("/api/brands", brandsRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/reviews", reviewsRoutes);
 app.use("/api/vouchers", vouchersRoutes);
+app.use("/api/uploads", uploadsRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/stats", statsRoutes);
 

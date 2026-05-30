@@ -9,15 +9,19 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "seed": "node src/seed.js",
+    "seed:products": "node src/seed-products.js",
+    "update:images": "node src/update-product-images.js",
     "db:reset": "node src/seed.js --reset",
     "kill-port": "powershell -Command \"Get-Process -Id (Get-NetTCPConnection -LocalPort 4000 -ErrorAction SilentlyContinue).OwningProcess -ErrorAction SilentlyContinue | Stop-Process -Force; Write-Host 'Port 4000 freed'\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.10.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.1.1",
     "mysql2": "^3.11.5",
     "nodemailer": "^8.0.9"
   }

@@ -1,0 +1,113 @@
+.img-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.img-preview {
+    position: relative;
+    width: 100%;
+    max-width: 220px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f9fb;
+}
+
+.img-preview img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+
+.img-clear {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.img-clear:hover {
+    background: var(--danger);
+}
+
+.img-badge {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.img-badge i {
+    font-size: 10px;
+}
+
+.img-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.img-actions .btn-outline {
+    padding: 9px 16px;
+    font-size: 13px;
+}
+
+.img-or {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 2px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.img-url-row {
+    display: flex;
+    gap: 6px;
+}
+
+.img-url-row input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.img-url-row input:focus {
+    border-color: var(--primary);
+}
+
+.img-url-row .btn-outline {
+    padding: 8px 14px;
+    font-size: 13px;
+}
+
+.img-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.img-hint i {
+    color: var(--primary);
+    margin-right: 4px;
+}
