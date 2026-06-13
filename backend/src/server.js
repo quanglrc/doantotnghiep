@@ -17,6 +17,8 @@ import vouchersRoutes from "./routes/vouchers.routes.js";
 import uploadsRoutes from "./routes/uploads.routes.js";
 import chatbotRoutes from "./routes/chatbot.routes.js";
 import statsRoutes from "./routes/stats.routes.js";
+import inventoryRoutes from "./routes/inventory.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
 
 const app = express();
 
@@ -44,6 +46,8 @@ app.use("/api/vouchers", vouchersRoutes);
 app.use("/api/uploads", uploadsRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api/inventory", inventoryRoutes);
+app.use("/api/payment", paymentRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

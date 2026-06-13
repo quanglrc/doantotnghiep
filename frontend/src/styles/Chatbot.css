@@ -283,3 +283,103 @@
     .chatbot-fab { right: 16px; bottom: 16px; }
     .chatbot-panel { right: 8px; left: 8px; bottom: 80px; width: auto; }
 }
+
+/* ========== Chatbot Product Card ========== */
+.chat-product-card {
+    display: flex;
+    flex-direction: column;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 8px 0 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.chat-product-card:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary);
+}
+
+.cpc-image {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.cpc-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.cpc-placeholder {
+    font-size: 28px;
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+.cpc-info {
+    padding: 8px 10px 4px;
+}
+
+.cpc-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cpc-price {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--danger, #dc2626);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.cpc-old-price {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+.cpc-add-btn {
+    margin: 6px 10px 8px;
+    padding: 6px 0;
+    border: none;
+    border-radius: 6px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: background 0.15s, transform 0.1s;
+}
+
+.cpc-add-btn:hover {
+    background: var(--primary-dark);
+    transform: scale(1.02);
+}
+
+.cpc-add-btn:active {
+    transform: scale(0.97);
+}

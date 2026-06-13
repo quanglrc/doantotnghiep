@@ -24,6 +24,23 @@ export const runMigrations = async () => {
             "DELETE FROM password_reset_tokens WHERE created_at < DATE_SUB(NOW(), INTERVAL 7 DAY)"
         );
 
+        // Bảng lịch sử kho (inventory_log)
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS inventory_log (
+                id               INT AUTO_INCREMENT PRIMARY KEY,
+                product_id       INT NOT NULL,
+                type             ENUM('import', 'export', 'order', 'cancel', 'update') NOT NULL,
+                quantity_change  INT NOT NULL,
+                reason           VARCHAR(500),
+                created_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                created_by       INT,
+                
+                FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+                FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+                INDEX idx_inventory_log_product (product_id, created_at)
+            ) ENGINE=InnoDB
+        `);
+
         console.log("[migrations] ✓ Đã kiểm tra/cập nhật schema phụ");
     } catch (err) {
         console.error("[migrations] ✗ Lỗi:", err.message);

@@ -52,6 +52,13 @@ router.post(
             }
         );
         const p = await one("SELECT * FROM products WHERE id = :id", { id: result.insertId });
+        
+        if (p.stock > 0) {
+            await query(`INSERT INTO inventory_log (product_id, type, quantity_change, reason, created_by) VALUES (:pid, 'import', :qc, :reason, :uid)`, {
+                pid: p.id, qc: p.stock, reason: `Nhập kho ban đầu khi tạo sản phẩm`, uid: req.user.id
+            });
+        }
+        
         res.status(201).json(formatProduct(p));
     })
 );
@@ -62,6 +69,9 @@ router.put(
     asyncH(async (req, res) => {
         const id = Number(req.params.id);
         const { name, slug, category_id, brand_id, price, old_price, image, badge, description, stock, is_active } = req.body || {};
+        
+        const oldP = await one("SELECT stock FROM products WHERE id = :id", { id });
+        
         await query(
             `UPDATE products SET
                 name = COALESCE(:name, name),
@@ -92,6 +102,15 @@ router.put(
             }
         );
         const p = await one("SELECT * FROM products WHERE id = :id", { id });
+        
+        if (oldP && p.stock !== oldP.stock) {
+            const diff = p.stock - oldP.stock;
+            const type = diff > 0 ? 'update' : 'update'; // just use update
+            await query(`INSERT INTO inventory_log (product_id, type, quantity_change, reason, created_by) VALUES (:pid, :type, :qc, :reason, :uid)`, {
+                pid: id, type, qc: diff, reason: `Sửa thông tin sản phẩm`, uid: req.user.id
+            });
+        }
+        
         res.json(formatProduct(p));
     })
 );

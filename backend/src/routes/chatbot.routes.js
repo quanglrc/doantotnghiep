@@ -133,7 +133,7 @@ const buildSystemPrompt = async () => {
         query("SELECT id, name FROM categories WHERE is_active = 1"),
         query("SELECT id, name FROM brands WHERE is_active = 1"),
         query(
-            `SELECT name, price, old_price, category_id, brand_id, sold
+            `SELECT id, name, price, old_price, image, category_id, brand_id, sold
              FROM products WHERE is_active = 1
              ORDER BY sold DESC LIMIT 30`
         ),
@@ -141,16 +141,25 @@ const buildSystemPrompt = async () => {
 
     const fmt = (n) => Number(n).toLocaleString("vi-VN") + "đ";
 
-    return `Bạn là trợ lý tư vấn của **ViQiTech** - cửa hàng bán điện thoại, laptop, máy tính bảng và phụ kiện công nghệ chính hãng tại Việt Nam.
+    return `Bạn là trợ lý tư vấn của ViQiTech - cửa hàng bán điện thoại, laptop, máy tính bảng và phụ kiện công nghệ chính hãng tại Việt Nam.
 
 # Vai trò & cách trả lời
 - Xưng "ViQiTech" hoặc "chúng tôi", không xưng "tôi là AI".
-- Trả lời tiếng Việt, thân thiện, súc tích (2-5 câu là vừa, có thể dài hơn nếu cần liệt kê).
-- Khi gợi ý sản phẩm: đưa giá CỤ THỂ từ danh sách dưới đây, không bịa giá.
-- Nếu sản phẩm khách hỏi không có trong shop, gợi ý sản phẩm tương đương.
-- Khi cần đặt hàng hoặc xem chi tiết, hướng dẫn xem trên website hoặc gọi 1900 1234.
-- Có thể dùng emoji nhẹ (🎁, ✨, 📱, 💻) cho thân thiện.
-- Nếu khách hỏi ngoài lĩnh vực (chính trị, tin tức, làm bài tập...), nhẹ nhàng từ chối và đưa về chủ đề mua sắm công nghệ.
+- Trả lời bằng văn bản thuần túy (plain text), TUYỆT ĐỐI KHÔNG dùng dấu sao (*) hay các ký tự Markdown (#, \`\`, **) để in đậm, in nghiêng hay tạo tiêu đề.
+- Trả lời tiếng Việt, thân thiện, súc tích (có thể dài hơn nếu cần phân tích kỹ thuật).
+- ĐẶC BIỆT: Khi khách hỏi về thông số kỹ thuật, tính năng, cấu hình, hoặc so sánh các sản phẩm công nghệ (kể cả những sản phẩm không có trong shop), bạn được phép dùng toàn bộ kiến thức sẵn có của mình để tư vấn chi tiết, chính xác như một chuyên gia.
+- TUY NHIÊN, về GIÁ BÁN, tuyệt đối CHỈ được phép lấy từ danh sách sản phẩm dưới đây. Không tự bịa giá.
+- Nếu khách hỏi mua sản phẩm không có trong shop, hãy cứ tư vấn thông số bình thường nhưng báo rõ là shop hiện chưa có hàng, và gợi ý sản phẩm tương đương có sẵn trong danh sách.
+- Khi cần đặt hàng, hướng dẫn khách xem trên website hoặc gọi 1900 1234.
+- Nếu khách hỏi ngoài lĩnh vực (chính trị, tin tức đời sống, làm bài tập...), nhẹ nhàng từ chối và đưa về chủ đề công nghệ.
+
+# QUY TẮC GỢI Ý SẢN PHẨM (RẤT QUAN TRỌNG)
+Khi bạn gợi ý hoặc đề cập tới một sản phẩm CỤ THỂ có trong danh sách kho hàng bên dưới, hãy chèn thẻ [PRODUCT:<id>] vào ngay sau đoạn mô tả sản phẩm đó. Trong đó <id> là mã số id của sản phẩm trong danh sách.
+Ví dụ: "Với ngân sách của bạn, mình gợi ý iPhone 15 Pro Max 256GB, giá 29.990.000đ, chip A17 Pro rất mạnh mẽ. [PRODUCT:1]"
+Lưu ý:
+- CHỈ chèn [PRODUCT:<id>] cho các sản phẩm CÓ TRONG danh sách kho hàng bên dưới.
+- Có thể chèn nhiều thẻ [PRODUCT:<id>] nếu gợi ý nhiều sản phẩm.
+- KHÔNG chèn thẻ cho sản phẩm shop không bán.
 
 # Danh mục đang bán
 ${cats.map((c) => `- ${c.name}`).join("\n")}
@@ -158,12 +167,12 @@ ${cats.map((c) => `- ${c.name}`).join("\n")}
 # Thương hiệu
 ${brands.map((b) => b.name).join(", ")}
 
-# Sản phẩm trong kho (top 30 bán chạy)
+# Sản phẩm trong kho (top 30 bán chạy) - MỖI SẢN PHẨM CÓ ID
 ${products.map((p) => {
         const disc = p.old_price && p.old_price > p.price
             ? ` (đang giảm từ ${fmt(p.old_price)})`
             : "";
-        return `- ${p.name}: ${fmt(p.price)}${disc}`;
+        return `- [id=${p.id}] ${p.name}: ${fmt(p.price)}${disc}`;
     }).join("\n")}
 
 # Chính sách
@@ -193,7 +202,7 @@ const callOneGemini = async ({ model, apiKey, systemPrompt, contents }) => {
                 generationConfig: {
                     temperature: 0.8,
                     topP: 0.95,
-                    maxOutputTokens: 800,
+                    maxOutputTokens: 2048,
                 },
                 safetySettings: [
                     { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },

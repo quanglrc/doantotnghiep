@@ -11,6 +11,7 @@ const menu = [
     { to: "/admin/thuong-hieu", icon: "fa-tags", label: "Thương hiệu" },
     { to: "/admin/voucher", icon: "fa-ticket", label: "Voucher" },
     { to: "/admin/don-hang", icon: "fa-receipt", label: "Đơn hàng" },
+    { to: "/admin/kho", icon: "fa-boxes-stacked", label: "Quản lý kho" },
     { to: "/admin/nguoi-dung", icon: "fa-users", label: "Người dùng" },
     { to: "/admin/chatbot", icon: "fa-robot", label: "Chatbot AI" },
     { to: "/admin/thong-ke", icon: "fa-chart-column", label: "Thống kê" },

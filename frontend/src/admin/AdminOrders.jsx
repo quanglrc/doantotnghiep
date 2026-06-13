@@ -10,6 +10,88 @@ const AdminOrders = () => {
     const [q, setQ] = useState("");
     const [viewing, setViewing] = useState(null);
 
+    const handlePrintInvoice = (order) => {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+
+        const itemsHtml = order.items.map((it, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>${it.name} ${it.variant_label ? '- ' + it.variant_label : ''} ${it.color_name ? '(' + it.color_name + ')' : ''}</td>
+                <td style="text-align: center;">${it.qty}</td>
+                <td style="text-align: right;">${formatPrice(it.price)}</td>
+                <td style="text-align: right;">${formatPrice(it.subtotal || (it.price * it.qty))}</td>
+            </tr>
+        `).join('');
+
+        const html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Hóa đơn ${order.id}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; color: #333; line-height: 1.5; }
+                    .header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+                    .header h1 { margin: 0; font-size: 24px; color: #333; }
+                    .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
+                    .company h2 { margin: 0; font-size: 20px; color: #2563eb; }
+                    .info { margin-bottom: 30px; font-size: 14px; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+                    th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+                    th { background: #f8f9fa; }
+                    .totals { width: 50%; float: right; }
+                    .totals table th, .totals table td { border: none; padding: 5px 10px; }
+                    .footer { clear: both; margin-top: 50px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #eee; padding-top: 20px; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div class="company">
+                        <h2>ViQiTECH</h2>
+                        <p>123 Đường Công Nghệ, Quận 1, TP.HCM<br>ĐT: 1900 1234<br>Email: hotro@viqitech.vn</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h1>HÓA ĐƠN BÁN HÀNG</h1>
+                        <p>Mã hóa đơn: <strong>${order.id}</strong><br>Ngày lập: ${new Date().toLocaleDateString("vi-VN")}</p>
+                    </div>
+                </div>
+                <div class="info">
+                    <h3>Thông tin khách hàng</h3>
+                    <p><strong>Họ tên:</strong> ${order.customer?.name}<br>
+                    <strong>Điện thoại:</strong> ${order.customer?.phone || 'Không có'}<br>
+                    <strong>Địa chỉ:</strong> ${order.customer?.address || 'Không có'}</p>
+                </div>
+                <table>
+                    <thead><tr><th>STT</th><th>Sản phẩm</th><th style="text-align: center;">SL</th><th style="text-align: right;">Đơn giá</th><th style="text-align: right;">Thành tiền</th></tr></thead>
+                    <tbody>${itemsHtml}</tbody>
+                </table>
+                <div class="totals">
+                    <table>
+                        <tr><td>Tạm tính:</td><td style="text-align: right;">${formatPrice(order.subtotal)}</td></tr>
+                        <tr><td>Phí vận chuyển:</td><td style="text-align: right;">${order.shipping === 0 ? 'Miễn phí' : formatPrice(order.shipping)}</td></tr>
+                        ${order.discount > 0 ? `<tr><td>Giảm giá:</td><td style="text-align: right;">- ${formatPrice(order.discount)}</td></tr>` : ''}
+                        <tr><td><strong>Tổng cộng:</strong></td><td style="text-align: right; font-weight: bold; color: #dc2626;">${formatPrice(order.total)}</td></tr>
+                    </table>
+                </div>
+                <div class="footer"><p>Cảm ơn quý khách đã mua sắm tại ViQiTECH!</p></div>
+                <script>
+                    window.onload = function() { window.print(); }
+                </script>
+            </body>
+            </html>
+        `;
+
+        iframe.contentWindow.document.open();
+        iframe.contentWindow.document.write(html);
+        iframe.contentWindow.document.close();
+
+        // Xóa iframe sau khi in xong
+        setTimeout(() => {
+            document.body.removeChild(iframe);
+        }, 3000);
+    };
+
     const list = useMemo(() => {
         let arr = orders.slice();
         if (tab !== "all") arr = arr.filter((o) => o.status === tab);
@@ -119,9 +201,14 @@ const AdminOrders = () => {
                     <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 600 }}>
                         <div className="modal-head">
                             <h3>Chi tiết đơn {viewing.id}</h3>
-                            <button type="button" className="modal-close" onClick={() => setViewing(null)}>
-                                <i className="fa-solid fa-xmark"></i>
-                            </button>
+                            <div style={{ display: "flex", gap: "10px" }}>
+                                <button type="button" className="btn-outline btn-sm" onClick={() => handlePrintInvoice(viewing)} title="In hóa đơn">
+                                    <i className="fa-solid fa-print"></i> In hóa đơn
+                                </button>
+                                <button type="button" className="modal-close" onClick={() => setViewing(null)}>
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
                         </div>
                         <div className="modal-body">
                             <div>

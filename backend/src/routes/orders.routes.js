@@ -81,21 +81,25 @@ router.post(
                 }
             );
             for (const it of items) {
+                const qty = Number(it.qty) || 1;
+                const productId = Number.isInteger(it.id) ? it.id : null;
                 await conn.execute(
                     `INSERT INTO order_items (order_id, product_id, product_name, product_image, variant_label, color_name, price, qty, subtotal)
                      VALUES (:order_id, :product_id, :product_name, :product_image, :variant_label, :color_name, :price, :qty, :subtotal)`,
                     {
                         order_id: orderId,
-                        product_id: Number.isInteger(it.id) ? it.id : null,
+                        product_id: productId,
                         product_name: it.name,
                         product_image: it.image || null,
                         variant_label: it.variant_label || null,
                         color_name: it.color_name || null,
                         price: Number(it.price) || 0,
-                        qty: Number(it.qty) || 1,
-                        subtotal: (Number(it.price) || 0) * (Number(it.qty) || 1),
+                        qty: qty,
+                        subtotal: (Number(it.price) || 0) * qty,
                     }
                 );
+                
+                // No stock deduction here - will deduct when status becomes completed
             }
             await conn.commit();
             const o = await one("SELECT * FROM orders WHERE id = :id", { id: orderId });
@@ -161,9 +165,30 @@ router.patch(
         const { status } = req.body || {};
         const allowed = ["pending", "confirmed", "shipping", "completed", "cancelled"];
         if (!allowed.includes(status)) return res.status(400).json({ error: "Trạng thái không hợp lệ." });
-        await query("UPDATE orders SET status = :status WHERE id = :id", { status, id: req.params.id });
         const o = await one("SELECT * FROM orders WHERE id = :id", { id: req.params.id });
-        res.json(await fmt(o));
+        const oldStatus = o.status;
+        await query("UPDATE orders SET status = :status WHERE id = :id", { status, id: req.params.id });
+        
+        if (status === "completed" && oldStatus !== "completed") {
+            const items = await query("SELECT product_id, qty FROM order_items WHERE order_id = :id AND product_id IS NOT NULL", { id: req.params.id });
+            for (const it of items) {
+                await query("UPDATE products SET stock = GREATEST(0, stock - :qty) WHERE id = :pid", { qty: it.qty, pid: it.product_id });
+                await query(`INSERT INTO inventory_log (product_id, type, quantity_change, reason, created_by) VALUES (:pid, 'order', :qc, :reason, :uid)`, {
+                    pid: it.product_id, qc: -it.qty, reason: `Xuất kho do đơn hàng ${req.params.id} hoàn thành`, uid: req.user.id
+                });
+            }
+        } else if (oldStatus === "completed" && status !== "completed") {
+            const items = await query("SELECT product_id, qty FROM order_items WHERE order_id = :id AND product_id IS NOT NULL", { id: req.params.id });
+            for (const it of items) {
+                await query("UPDATE products SET stock = stock + :qty WHERE id = :pid", { qty: it.qty, pid: it.product_id });
+                await query(`INSERT INTO inventory_log (product_id, type, quantity_change, reason, created_by) VALUES (:pid, 'cancel', :qc, :reason, :uid)`, {
+                    pid: it.product_id, qc: it.qty, reason: `Hoàn kho do đơn hàng ${req.params.id} chuyển từ hoàn thành sang ${status}`, uid: req.user.id
+                });
+            }
+        }
+        
+        const updated = await one("SELECT * FROM orders WHERE id = :id", { id: req.params.id });
+        res.json(await fmt(updated));
     })
 );
 
@@ -176,14 +201,52 @@ router.patch(
         if (req.user.role !== "admin" && o.user_id !== req.user.id) {
             return res.status(403).json({ error: "Không có quyền." });
         }
-        if (!["pending", "confirmed"].includes(o.status)) {
-            return res.status(400).json({ error: "Đơn không thể hủy ở trạng thái hiện tại." });
+        // Chỉ cho hủy khi đơn còn ở trạng thái "Chờ xác nhận".
+        // Sau khi admin đã xác nhận thì khách không được hủy nữa.
+        if (o.status !== "pending") {
+            const reasons = {
+                confirmed: "Đơn đã được xác nhận, không thể hủy. Liên hệ hotline 1900 1234 để được hỗ trợ.",
+                shipping: "Đơn đang được giao, không thể hủy.",
+                completed: "Đơn đã hoàn thành.",
+                cancelled: "Đơn đã bị hủy trước đó.",
+            };
+            return res.status(400).json({
+                error: reasons[o.status] || "Đơn không thể hủy ở trạng thái hiện tại.",
+            });
         }
         const reason = req.body?.reason || "Khách hủy đơn";
         await query(
             "UPDATE orders SET status = 'cancelled', cancel_reason = :reason WHERE id = :id",
             { reason, id: req.params.id }
         );
+        
+        // No stock restoration here, because stock is only deducted when completed.
+        // A pending order hasn't deducted stock yet.
+        
+        const updated = await one("SELECT * FROM orders WHERE id = :id", { id: req.params.id });
+        res.json(await fmt(updated));
+    })
+);
+
+router.patch(
+    "/:id/payment-method",
+    authRequired,
+    asyncH(async (req, res) => {
+        const o = await one("SELECT * FROM orders WHERE id = :id", { id: req.params.id });
+        if (!o) return res.status(404).json({ error: "Không tìm thấy đơn." });
+        if (req.user.role !== "admin" && o.user_id !== req.user.id) {
+            return res.status(403).json({ error: "Không có quyền." });
+        }
+        if (o.status !== "pending") {
+            return res.status(400).json({ error: "Chỉ đơn hàng chờ xác nhận mới có thể đổi phương thức thanh toán." });
+        }
+        
+        const { paymentMethod } = req.body || {};
+        if (!["cod", "bank", "card", "momo", "zalopay", "vnpay"].includes(paymentMethod)) {
+            return res.status(400).json({ error: "Phương thức thanh toán không hợp lệ." });
+        }
+
+        await query("UPDATE orders SET payment_method = :pm WHERE id = :id", { pm: paymentMethod, id: req.params.id });
         const updated = await one("SELECT * FROM orders WHERE id = :id", { id: req.params.id });
         res.json(await fmt(updated));
     })

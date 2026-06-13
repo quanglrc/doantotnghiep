@@ -212,7 +212,7 @@ CREATE TABLE orders (
     discount        DECIMAL(15,2) NOT NULL DEFAULT 0,
     total           DECIMAL(15,2) NOT NULL,
     status          ENUM('pending','confirmed','shipping','completed','cancelled') NOT NULL DEFAULT 'pending',
-    payment_method  ENUM('cod','bank','card','momo','zalopay') NOT NULL DEFAULT 'cod',
+    payment_method  ENUM('cod','bank','card','momo','zalopay','vnpay') NOT NULL DEFAULT 'cod',
     payment_status  ENUM('pending','paid','refunded') NOT NULL DEFAULT 'pending',
     voucher_code    VARCHAR(50),
     cancel_reason   VARCHAR(500),
@@ -359,7 +359,24 @@ CREATE TABLE contact_submissions (
 ) ENGINE=InnoDB;
 
 -- =====================================================================
--- 11. VIEW HỖ TRỢ THỐNG KÊ
+-- 11. QUẢN LÝ KHO (INVENTORY LOG)
+-- =====================================================================
+CREATE TABLE inventory_log (
+    id               INT AUTO_INCREMENT PRIMARY KEY,
+    product_id       INT NOT NULL,
+    type             ENUM('import', 'export', 'order', 'cancel', 'update') NOT NULL,
+    quantity_change  INT NOT NULL,
+    reason           VARCHAR(500),
+    created_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by       INT,
+    
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_inventory_log_product (product_id, created_at)
+) ENGINE=InnoDB;
+
+-- =====================================================================
+-- 12. VIEW HỖ TRỢ THỐNG KÊ
 -- =====================================================================
 -- Doanh thu theo tháng
 CREATE OR REPLACE VIEW v_monthly_revenue AS

@@ -46,7 +46,8 @@
       "Bash(node src/upload-hero-banners.js)",
       "Bash(curl -s -o /dev/null -w \"iPhone:    %{http_code} \\(size: %{size_download} bytes\\)\\\\n\" \"https://res.cloudinary.com/dpf2uink8/image/upload/v1780138979/viqitech/banners/hero-iphone-15-pro-max.jpg\")",
       "Bash(curl -s -o /dev/null -w \"Laptop:    %{http_code} \\(size: %{size_download} bytes\\)\\\\n\" \"https://res.cloudinary.com/dpf2uink8/image/upload/v1780138981/viqitech/banners/hero-laptop-gaming.jpg\")",
-      "Bash(curl -s -o /dev/null -w \"iPad:      %{http_code} \\(size: %{size_download} bytes\\)\\\\n\" \"https://res.cloudinary.com/dpf2uink8/image/upload/v1780139342/viqitech/banners/hero-ipad-pro-m4.jpg\")"
+      "Bash(curl -s -o /dev/null -w \"iPad:      %{http_code} \\(size: %{size_download} bytes\\)\\\\n\" \"https://res.cloudinary.com/dpf2uink8/image/upload/v1780139342/viqitech/banners/hero-ipad-pro-m4.jpg\")",
+      "Bash(grep -v \"^$\")"
     ]
   }
 }

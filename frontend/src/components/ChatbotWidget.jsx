@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
+import { useShop } from "../context/ShopContext";
+import { useCart } from "../context/CartContext";
+import { useToast } from "../context/ToastContext";
+import { formatPrice } from "../data/products";
 import "../styles/Chatbot.css";
 
 const DEFAULT_QUICK = [
@@ -13,6 +18,99 @@ const DEFAULT_WELCOME =
     "Xin chào! Tôi là trợ lý ảo của ViQiTech. Bạn cần hỗ trợ gì hôm nay?";
 
 let msgIdCounter = 0;
+
+/* ---- Component thẻ sản phẩm nhỏ gọn trong chat ---- */
+const ChatProductCard = ({ productId }) => {
+    const { getProduct } = useShop();
+    const { addItem } = useCart();
+    const toast = useToast();
+    const navigate = useNavigate();
+
+    const product = getProduct(productId);
+    if (!product) return null;
+
+    const handleAddToCart = (e) => {
+        e.stopPropagation();
+        addItem(product);
+        toast.show(`Đã thêm "${product.name}" vào giỏ hàng!`, "success");
+    };
+
+    const handleGoToDetail = () => {
+        navigate(`/san-pham/${product.id}`);
+    };
+
+    return (
+        <div className="chat-product-card" onClick={handleGoToDetail}>
+            <div className="cpc-image">
+                {product.image ? (
+                    <img src={product.image} alt={product.name} />
+                ) : (
+                    <div className="cpc-placeholder">
+                        <i className="fa-solid fa-box-open"></i>
+                    </div>
+                )}
+            </div>
+            <div className="cpc-info">
+                <div className="cpc-name">{product.name}</div>
+                <div className="cpc-price">
+                    Giá: {formatPrice(product.price)}
+                    {product.old_price && product.old_price > product.price && (
+                        <span className="cpc-old-price">{formatPrice(product.old_price)}</span>
+                    )}
+                </div>
+            </div>
+            <button
+                type="button"
+                className="cpc-add-btn"
+                onClick={handleAddToCart}
+                title="Thêm vào giỏ hàng"
+            >
+                <i className="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+            </button>
+        </div>
+    );
+};
+
+/* ---- Phân tích tin nhắn bot: tách text và [PRODUCT:id] ---- */
+const parseBotMessage = (text) => {
+    const parts = [];
+    const regex = /\[PRODUCT:(\d+)\]/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+        // Phần text trước thẻ product
+        if (match.index > lastIndex) {
+            parts.push({ type: "text", content: text.slice(lastIndex, match.index) });
+        }
+        parts.push({ type: "product", productId: match[1] });
+        lastIndex = match.index + match[0].length;
+    }
+    // Phần text còn lại sau thẻ product cuối cùng
+    if (lastIndex < text.length) {
+        parts.push({ type: "text", content: text.slice(lastIndex) });
+    }
+    return parts;
+};
+
+/* ---- Render nội dung 1 bubble bot ---- */
+const BotBubbleContent = ({ text }) => {
+    const parts = parseBotMessage(text);
+
+    return (
+        <>
+            {parts.map((part, i) => {
+                if (part.type === "product") {
+                    return <ChatProductCard key={i} productId={part.productId} />;
+                }
+                // Render text thường, giữ ngắt dòng
+                return part.content.split("\n").map((line, j) => (
+                    <div key={`${i}-${j}`}>{line || <>&nbsp;</>}</div>
+                ));
+            })}
+        </>
+    );
+};
 
 const ChatbotWidget = () => {
     const [open, setOpen] = useState(false);
@@ -153,9 +251,13 @@ const ChatbotWidget = () => {
                                 key={m.id}
                                 className={`bubble bubble-${m.role}${m.error ? " bubble-error" : ""}`}
                             >
-                                {m.text.split("\n").map((line, i) => (
-                                    <div key={i}>{line || <>&nbsp;</>}</div>
-                                ))}
+                                {m.role === "bot" ? (
+                                    <BotBubbleContent text={m.text} />
+                                ) : (
+                                    m.text.split("\n").map((line, i) => (
+                                        <div key={i}>{line || <>&nbsp;</>}</div>
+                                    ))
+                                )}
                                 {m.source === "error" && (
                                     <div className="bubble-source">
                                         <i className="fa-solid fa-triangle-exclamation"></i> Gemini đang lỗi

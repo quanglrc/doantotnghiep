@@ -6,10 +6,8 @@ import "../styles/Checkout.css";
 
 const PAYMENT_LABEL = {
     cod: "Thanh toán khi nhận hàng (COD)",
-    bank: "Chuyển khoản ngân hàng",
-    card: "Thẻ ATM / Visa / Mastercard",
-    momo: "Ví MoMo",
-    zalopay: "Ví ZaloPay",
+    qr: "Chuyển khoản mã QR",
+    vnpay: "Thanh toán qua cổng VNPay",
 };
 
 const STATUS_LABEL = {

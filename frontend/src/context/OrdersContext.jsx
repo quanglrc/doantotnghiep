@@ -47,7 +47,7 @@ export const OrdersProvider = ({ children }) => {
         reviews,
         refresh: () => Promise.all([refreshOrders(), refreshReviews()]),
 
-        createOrder: async ({ items, subtotal, shipping, total, customer }) => {
+        createOrder: async ({ items, subtotal, shipping, discount, total, customer, paymentMethod, note, voucherCode }) => {
             try {
                 const o = await api.post("/orders", {
                     items: items.map((it) => ({
@@ -59,8 +59,12 @@ export const OrdersProvider = ({ children }) => {
                     })),
                     subtotal,
                     shipping,
+                    discount,
                     total,
                     customer,
+                    paymentMethod,
+                    note,
+                    voucherCode,
                 });
                 setOrders((arr) => [o, ...arr]);
                 return { ok: true, order: o };

@@ -4,6 +4,7 @@ import { formatPrice } from "../../data/products";
 import { useAuth } from "../../context/AuthContext";
 import { useOrders, STATUS } from "../../context/OrdersContext";
 import { useToast } from "../../context/ToastContext";
+import { api } from "../../api/client";
 import ReviewModal from "../ReviewModal";
 import "../../styles/Order.css";
 
@@ -55,6 +56,18 @@ const Order = () => {
         toast.show("Đã hủy đơn hàng.", "info");
     };
 
+    const onRetryPayment = async (order) => {
+        try {
+            toast.show("Đang chuyển hướng sang VNPay...", "info");
+            const res = await api.post("/payment/vnpay/create-payment-url", { orderId: order.id, amount: order.total });
+            if (res.paymentUrl) {
+                window.location.href = res.paymentUrl;
+            }
+        } catch (err) {
+            toast.show("Không thể tạo liên kết thanh toán VNPay.", "error");
+        }
+    };
+
     return (
         <div className="container order-page">
             <nav className="breadcrumbs">
@@ -90,7 +103,7 @@ const Order = () => {
                 <div className="order-list">
                     {list.map((o) => {
                         const st = STATUS[o.status];
-                        const canCancel = o.status === "pending" || o.status === "confirmed";
+                        const canCancel = o.status === "pending";
                         const canReview = o.status === "completed";
                         return (
                             <div key={o.id} className="order-card">
@@ -122,6 +135,11 @@ const Order = () => {
                                     {canCancel && (
                                         <button type="button" className="btn-outline btn-danger" onClick={() => onCancel(o.id)}>
                                             <i className="fa-solid fa-xmark"></i> Hủy đơn
+                                        </button>
+                                    )}
+                                    {o.status === "pending" && o.payment_method === "vnpay" && (
+                                        <button type="button" className="btn-primary" onClick={() => onRetryPayment(o)} style={{ marginLeft: "10px" }}>
+                                            <i className="fa-solid fa-credit-card"></i> Thanh toán lại
                                         </button>
                                     )}
                                     {canReview && (

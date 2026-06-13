@@ -33,32 +33,18 @@ const PAYMENT_METHODS = [
         color: "#16a34a",
     },
     {
-        id: "bank",
-        label: "Chuyển khoản ngân hàng",
-        desc: "Quét QR hoặc chuyển khoản qua Internet Banking",
-        icon: "fa-building-columns",
+        id: "qr",
+        label: "Chuyển khoản mã QR",
+        desc: "Quét mã QR qua ứng dụng ngân hàng",
+        icon: "fa-qrcode",
         color: "#1e6fff",
     },
     {
-        id: "card",
-        label: "Thẻ ATM / Visa / Mastercard / JCB",
-        desc: "Thanh toán bằng thẻ nội địa hoặc thẻ quốc tế",
+        id: "vnpay",
+        label: "Thanh toán VNPay",
+        desc: "Thanh toán qua cổng VNPay (ATM/Visa/Mastercard)",
         icon: "fa-credit-card",
-        color: "#7c3aed",
-    },
-    {
-        id: "momo",
-        label: "Ví MoMo",
-        desc: "Thanh toán qua ví điện tử MoMo",
-        icon: "fa-mobile-screen",
-        color: "#a50064",
-    },
-    {
-        id: "zalopay",
-        label: "Ví ZaloPay",
-        desc: "Thanh toán qua ví điện tử ZaloPay",
-        icon: "fa-wallet",
-        color: "#0068ff",
+        color: "#005BAA",
     },
 ];
 
@@ -189,9 +175,27 @@ const Checkout = () => {
             setError(r.error || "Đặt hàng thất bại. Vui lòng thử lại.");
             return;
         }
+
+        if (form.paymentMethod === "vnpay") {
+            try {
+                const res = await api.post("/payment/vnpay/create-payment-url", { orderId: r.order.id, amount: total });
+                if (res.paymentUrl) {
+                    clear(); // Xóa giỏ hàng ngay khi tạo đơn thành công và chuẩn bị sang VNPay
+                    window.location.href = res.paymentUrl;
+                    return;
+                }
+            } catch (err) {
+                toast.show("Không thể tạo liên kết thanh toán VNPay.", "error");
+            }
+        }
+
         toast.show("Đặt hàng thành công!", "success");
         clear();
-        nav(`/dat-hang-thanh-cong/${r.order.id}`, { replace: true });
+        if (form.paymentMethod === "cod") {
+            nav("/don-hang", { replace: true });
+        } else {
+            nav(`/dat-hang-thanh-cong/${r.order.id}`, { replace: true });
+        }
     };
 
     return (
@@ -369,16 +373,16 @@ const Checkout = () => {
                             ))}
                         </div>
 
-                        {form.paymentMethod === "bank" && (
+                        {form.paymentMethod === "qr" && (
                             <div className="ck-info-box">
                                 <strong>Thông tin chuyển khoản:</strong>
                                 <div>Ngân hàng: <b>Vietcombank</b> — Chủ TK: <b>CONG TY VIQITECH</b></div>
                                 <div>Số TK: <b>0123 4567 89</b> — Nội dung: <b>VQ [SĐT người nhận]</b></div>
                             </div>
                         )}
-                        {(form.paymentMethod === "momo" || form.paymentMethod === "zalopay") && (
+                        {form.paymentMethod === "vnpay" && (
                             <div className="ck-info-box">
-                                Bạn sẽ được chuyển sang ứng dụng {form.paymentMethod === "momo" ? "MoMo" : "ZaloPay"} sau khi bấm Đặt hàng để hoàn tất thanh toán.
+                                Bạn sẽ được chuyển sang cổng thanh toán VNPay sau khi bấm Đặt hàng để hoàn tất thanh toán.
                             </div>
                         )}
                     </section>
